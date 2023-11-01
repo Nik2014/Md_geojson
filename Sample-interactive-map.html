@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Leaflet map!</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <script src="leaflet-ajax-gh-pages\dist\leaflet.ajax.js"></script>
+    <style>
+        #map { height: 600px; }
+    </style>
+</head>
+<body>
+    <h1>Наша новая Арбат в Афинах</h1>
+    <div id="map"></div>
+
+    <script>
+        // initialize the map
+        var map = L.map('map').setView([38, 24], 6);
+
+        // load a tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            minZoom: 2
+        }).addTo(map);
+        // Create sample polygons for Athens area
+        var polygon1 = L.polygon([
+            [37.98, 23.72],
+            [38.03, 23.72],
+            [38.03, 23.78],
+            [37.98, 23.78]
+        ]).addTo(map);
+    
+        var polygon2 = L.polygon([
+            [37.94, 23.82],
+            [37.99, 23.82],
+            [37.99, 23.88],
+            [37.94, 23.88]
+        ]).addTo(map);
+    
+        
+        // Load GeoJSON from an external file
+        fetch("file:///C:\Users\nikos\Desktop\VS CODE\perifereies.geojson")
+            .then(res => res.json())
+            .then(data => {
+                data.features.forEach(feature => {
+                    // Extract coordinates for each feature and create a polygon
+                    var coordinates = feature.geometry.coordinates;
+                    if (feature.geometry.type === 'Polygon') {
+                        L.polygon(coordinates).addTo(map);
+                    } else if (feature.geometry.type === 'MultiPolygon') {
+                        coordinates.forEach(polygonCoordinates => {
+                            L.polygon(polygonCoordinates).addTo(map);
+                        });
+                    }
+                });
+            });
+            </script>
+</body>
+</html>
